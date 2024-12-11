@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Note-Taking App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <img src="notes.png" alt="Icon representing a note-taking app" aria-hidden="true">
+                <span>Note-Taking App</span>
+            </h1>
+            <nav class="header-buttons">
+                <button id="createNote" aria-label="Create a new note">
+                    <img src="edit.png" alt=""> Create Notes
+                </button>
+                <button id="themeToggle" aria-label="Toggle Dark/Light Mode">🌙</button>
+            </nav>
+        </header>
+
+        <div class="quote-container" aria-live="polite">
+            <p id="quote">Your quote will appear here...</p>
+        </div>
+
+        <section class="note-input">
+            <input type="text" id="noteTitle" placeholder="Title" aria-label="Note Title">
+            <textarea id="noteContent" placeholder="Content" aria-label="Note Content"></textarea>
+            <button id="addNote" aria-label="Add a new note">Add Note</button>
+        </section>
+
+        <section class="note-search">
+            <input type="text" id="search" placeholder="Search notes" aria-label="Search notes">
+        </section>
+
+        <section id="notesContainer" class="notes-container" aria-label="Notes Container">
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
