@@ -4,18 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const addNoteButton = document.getElementById('addNote');
     const notesContainer = document.getElementById('notesContainer');
     const themeToggleButton = document.getElementById('themeToggle');
+    const createNoteButton = document.getElementById('createNote');
+    const noteInputSection = document.querySelector('.note-input');
     const searchInput = document.getElementById('search');
     const quoteElement = document.getElementById('quote');
 
     let notes = JSON.parse(localStorage.getItem('notes')) || [];
     let darkMode = localStorage.getItem('darkMode') === 'true';
 
+    createNoteButton.addEventListener('click', function () {
+        noteInputSection.style.display = noteInputSection.style.display === 'block' ? 'none' : 'block';
+    });
+
     async function fetchQuote() {
         try {
             const response = await fetch('https://api.quotable.io/random');
-            if (!response.ok) {
-                throw new Error('Failed to fetch quote');
-            }
+            if (!response.ok) throw new Error('Failed to fetch quote');
+
             const data = await response.json();
             quoteElement.textContent = data.content;
         } catch (error) {
@@ -30,33 +35,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const noteElement = document.createElement('div');
             noteElement.className = 'note';
 
-            const noteTitleElement = document.createElement('h3');
-            noteTitleElement.textContent = escapeHTML(note.title);
-            noteElement.appendChild(noteTitleElement);
+            noteElement.innerHTML = `
+                <h3>${escapeHTML(note.title)}</h3>
+                <p>${escapeHTML(note.content)}</p>
+                <button class="delete">Delete</button>
+            `;
 
-            const noteContentElement = document.createElement('p');
-            noteContentElement.textContent = escapeHTML(note.content);
-            noteElement.appendChild(noteContentElement);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete';
-            deleteButton.textContent = 'Delete';
-            deleteButton.style.backgroundColor = 'red';
-            deleteButton.style.color = 'white';
-            deleteButton.style.padding = '10px';
-            deleteButton.style.borderRadius = '5px';
-            deleteButton.style.border = 'none';
-            deleteButton.style.cursor = 'pointer';
-            deleteButton.addEventListener('click', function () {
-                deleteNote(note.id);
-            });
-            deleteButton.addEventListener('mouseover', function () {
-                deleteButton.style.backgroundColor = 'darkred';
-            });
-            deleteButton.addEventListener('mouseout', function () {
-                deleteButton.style.backgroundColor = 'red';
-            });
-            noteElement.appendChild(deleteButton);
+            const deleteButton = noteElement.querySelector('.delete');
+            deleteButton.addEventListener('click', () => deleteNote(note.id));
 
             notesContainer.appendChild(noteElement);
         });
@@ -76,11 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        notes.push({
-            id: Date.now(),
-            title: title,
-            content: content
-        });
+        notes.push({ id: Date.now(), title, content });
 
         noteTitle.value = '';
         noteContent.value = '';
@@ -94,11 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     themeToggleButton.addEventListener('click', function () {
         darkMode = !darkMode;
-        if (darkMode) {
-            document.body.setAttribute('dark-mode', '');
-        } else {
-            document.body.removeAttribute('dark-mode');
-        }
+        document.body.toggleAttribute('dark-mode', darkMode);
         localStorage.setItem('darkMode', darkMode);
         themeToggleButton.textContent = darkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
     });
@@ -109,18 +87,23 @@ document.addEventListener('DOMContentLoaded', function () {
         return div.innerHTML;
     }
 
+
     searchInput.addEventListener('input', function () {
         const searchTerm = searchInput.value.toLowerCase();
         const filteredNotes = notes.filter(note =>
-            note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm)
+            note.title.toLowerCase().includes(searchTerm) ||
+            note.content.toLowerCase().includes(searchTerm)
         );
         displayNotes(filteredNotes);
     });
+
 
     if (darkMode) {
         document.body.setAttribute('dark-mode', '');
         themeToggleButton.textContent = '☀️ Light Mode';
     }
+
+    noteInputSection.style.display = 'none';
 
     fetchQuote();
     displayNotes();
